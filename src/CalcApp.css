@@ -1,0 +1,1058 @@
+@import "tailwindcss";
+
+* {
+  font-family: "inter" sans-serif;
+}
+
+[data-theme = 'light'] {
+  --svgBackClr: aliceblue;
+  --topbackclr: #ffffff;
+  --contwhite:  #ffffff;
+  --grey: #7A7A7A;
+  --aquamFont: #0C645B;
+  --iconclr: #535557;
+  --bxShadowblr: rgba(0, 0, 1, 0);
+  --butnTxtclr: #C0C0C0;
+}
+
+[data-theme = 'dark'] {
+  --svgBackClr: #0a0a0a;
+  --topbackclr: #292b2c;
+  --contwhite: #0a0a0a;
+  --TxtFontXClr: #C0C0C0;
+  --butnTxtclr: #C0C0C0;
+  --bxShadowblr: rgba(0, 0, 255, 0);
+}
+
+/* New mobile styles */
+.container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  
+  grid-template-areas:
+'input input input input'
+'history left right down'
+'AC pie percent divide'
+'butn1 butn2 butn3 multiply'
+'butn4 butn5 butn6 plus'
+'butn7 butn8 butn9 minus'
+'butnPoint butnZero butnClear equal'
+    ;
+}
+
+#history {
+  background-color: #C0C0C0;
+  box-shadow: 0px 0px 0px var(--bxShadowblr);
+  padding: 0;
+  margin: 0 0 0 5% ;
+  border-radius: 1em;
+  position: absolute;
+  top: 30vh;
+  left: -3.5%;
+  z-index: 100;
+  overflow-y: scroll !important;
+}
+
+.hideHistory {
+  transition: width .5s ease, height .5s ease, padding .5s ease-out;
+  height: 0% !important;
+  width: 0% !important;
+  padding: 0 !important;
+}
+.showHistory {
+  transition: width .5s ease, height .5s ease, padding .5s ease-out;
+  height: 67% !important;
+  width: 96% !important; 
+  padding: 5% !important;
+}
+
+.fullContainer {
+  display: grid;
+  gap: 0.5em;
+  padding: 0.5em;
+  grid-template-columns: auto auto auto auto;
+  grid-template-rows: 20% 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  
+  grid-template-areas:
+'input input input input'
+'history left right DEG'
+'openP closeP power square'
+'factorial sqrt cbrt exp'
+'euler natLog log invert'
+'sine cosine tangent hyperbolic'
+'cosec secant cotangent answer'
+'AC pie percent divide'
+'butn1 butn2 butn3 multiply'
+'butn4 butn5 butn6 plus'
+'butn7 butn8 butn9 minus'
+'butnPoint butnZero butnClear equal'
+;
+}
+
+.butns {
+  padding: 0 !important;
+  background-color: #e5e5e5;  
+  color: #1c1917;
+  border-radius: 50%;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+
+.butnHid {
+  background-color: #ffffff !important;
+  color: #3f3f46 !important;
+}
+
+.hiddenButns {
+  display: none;
+}
+
+.butnc {
+  background-color: #bae6fd !important;
+  color: #0284c7 !important;
+  font-size: 1.5em;
+  font-weight: 400 !important;
+  text-align: center !important;
+}
+
+.highlytPink {
+  color: #db2777;
+}
+
+.highlytLime {
+  color: #65a30d;
+}
+
+.inputParent { 
+  grid-area: input; }
+
+.butnHist { grid-area: history; }
+.shiftLeft { grid-area: left; }
+.shiftRight { grid-area: right; }
+.chevDown { grid-area: down; }
+
+.butnAC { 
+  grid-area: AC; 
+  background-color: #ff0000;
+  color: #fee2e2;
+}
+.butnPie { grid-area: pie; }
+.butnPercent { grid-area: percent; }
+.butnDivide { grid-area: divide; }
+
+.butn1 { grid-area: butn1; }
+.butn2 { grid-area: butn2; }
+.butn3 { grid-area: butn3; }
+.butnTimes { grid-area: multiply; }
+
+.butn4 { grid-area: butn4; }
+.butn5 { grid-area: butn5; }
+.butn6 { grid-area: butn6; }
+.butnPlus { grid-area: plus; }
+
+.butn7 { grid-area: butn7; }
+.butn8 { grid-area: butn8; }
+.butn9 { grid-area: butn9; }
+.butnMinus { grid-area: minus; }
+
+.butnPoint { grid-area: butnPoint; }
+.butnZero { grid-area: butnZero; }
+.butnClear { grid-area: butnClear; }
+.butnEqual { 
+  grid-area: equal;
+  background-color: #bbf7d0;
+  color: #16a34a;
+  font-size: 1.5em;
+  font-weight: 400 !important;
+  text-align: center !important;
+}
+
+.bracOpen { grid-area: openP; }
+.bracClose { grid-area: closeP; }
+.butnPower { grid-area: power; }
+.butnSqr { grid-area: square; }
+
+.butnFact { grid-area: factorial; }
+.butnSqrt { grid-area: sqrt; }
+.butnCbrt { grid-area: cbrt; }
+.butnExp { grid-area: exp; }
+
+.butnEuler { grid-area: euler; }
+.butnNatLog { grid-area: natLog; }
+.butnLog { grid-area: log; }
+.butnInvert { grid-area: invert; font-size: 0.95em !important;}
+
+.butnSin { grid-area: sine; }
+.butnCos { grid-area: cosine; }
+.butnTan { grid-area: tangent; }
+.butnDEG { grid-area: DEG; color: #3b82f6 !important; font-size: 0.9em !important;}
+
+.butnArcSin { grid-area: arcSine; }
+.butnArcCos { grid-area: arcCosine;  }
+.butnArcTan { grid-area: arcTangent;  }
+.butnRAD { grid-area: RAD; color: #d946ef !important; font-size: 0.9em !important;}
+
+.butnCsc { grid-area: cosec; }
+.butnSec { grid-area: secant; }
+.butnCot { grid-area: cotangent; }
+
+.butnHyp { grid-area: hyperbolic; }
+
+.butnAns { grid-area: answer;  color: #d97706 !important; }
+
+.butnSinh { grid-area: sinh;  }
+.butnCosh { grid-area: cosh; }
+.butnTanh { grid-area: tanh; }
+
+.butnArcCsc { grid-area: arcCsc; }
+.butnArcSec { grid-area: arcSec; }
+.butnArcCot { grid-area: arcCot; }
+
+.butnCsch { grid-area: csch; }
+.butnSech { grid-area: sech; }
+.butnCoth { grid-area: coth; }
+
+/* Default Styles for mobile devices
+.calcparent {
+  background-color: var(--topbackclr);
+  height: 110vh;
+  position: relative;
+}
+
+.back {
+  padding-left: 10px !important;
+  color: var(--grey);
+  text-decoration: solid;
+  font-size: .9rem !important;
+  position: relative;
+  top: 50px;
+  font-size: small !important;
+}
+
+[class="fa-solid fa-chevron-left"] {
+  font-size: small !important;
+  line-height: 10px;
+}
+
+#history {
+  background-color: #C0C0C0;
+  box-shadow: 0px 0px 0px var(--bxShadowblr);
+  padding: 0;
+  margin: 0 0 0 5% ;
+  border-radius: 1em;
+  position: absolute;
+  top: 30vh;
+  left: -3.5%;
+  z-index: 100;
+  overflow-y: scroll !important;
+}
+
+.hideHistory {
+  transition: width .5s ease, height .5s ease, padding .5s ease-out;
+  height: 0% !important;
+  width: 0% !important;
+  padding: 0 !important;
+}
+.showHistory {
+  transition: width .5s ease, height .5s ease, padding .5s ease-out;
+  height: 67% !important;
+  width: 96% !important; 
+  padding: 5% !important;
+}
+
+.historyItem > p {
+  font-size: 120% !important;
+  text-decoration: none;    
+  color: #7fffd4;
+}
+
+.entered-expression {
+  color: #0C645B !important;
+}
+.precise-result {
+  color: #e2e0e0 !important;  
+  background-color: transparent;
+}
+
+.calccont {
+  display: grid;
+  position: relative !important;
+  height: 100vh;
+}
+
+  .cont {
+    position: absolute;
+    top: 51px; 
+    left: 0;
+    right: 0; 
+    display: grid;
+    height: 92vh;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows:  1.1fr 0.7fr 1.1fr 1.1fr 1.1fr 1.1fr 1.1fr;
+    border: 1px solid var(-);  
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 10;
+    background-color:var(--contwhite);
+    transition: all .5s ease;
+    margin: 1.5%;
+    padding: 2%;
+  }
+  .fullCont {
+    position: absolute;
+    top: 40px;
+    bottom: 15px;  
+    display: grid;
+    height: 96vh;
+    grid-template-columns:repeat(4, minmax(0, 0.9fr));      
+    grid-template-rows: 0.5fr 2em 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr;
+    border: 1px solid var(-);  
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 10;
+    background-color:var(--contwhite);
+    transition: all 1s ease;
+    margin: 1%;
+    padding: 2%;
+  }
+
+  .inputParent {
+    position: relative;
+    grid-area: 1/1/2/5;
+    visibility: none;
+    grid-area: 1/1/2/5;
+    height: 100%;
+    width: auto;
+    margin: 0;
+    padding: 0.25em 0 0.25em 0.25em ;      
+    font-size: 100%;
+    background-color: #C0C0C0;
+    color: rgba(127, 255, 212, 0.8);
+  }
+
+  .virtualInputField div {
+  position: inherit;
+  top: inherit;
+  width: 100% !important;
+  height: inherit;
+  padding: 0;
+  background-color: #C0C0C0;
+  border-radius: 5px;
+  }
+
+  .inputField {
+    visibility: hidden;
+    grid-area: 1/1/2/5;
+    height: 100%;
+    width: auto;
+    margin: 0;
+    font-size: 250%;
+    color: rgba(127, 255, 212, 0.8);   
+  }
+
+  .enteredExpressionInp {
+    position: absolute;
+    top: 0;
+    font-size: 110%;
+    color: #0C645B;
+    padding: 0em 0 0.25em 0.25em ;
+  }
+  .preciseResultInp {
+    position: absolute;
+    top: 50%;
+    font-size: 110%;
+    color: #e2e0e0;
+    padding: 0em 0 0.25em 0.25em ;
+  }
+
+  button { 
+    border: none;
+    box-shadow: 1px 0px 1px rgba(0, 0, 1, 0.2);
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #0a0a0a;
+  }
+  .butnClicked {
+    opacity: 0.5;
+  }
+  
+  .butns {
+    border-radius: 45%;
+    width: 92.5%;
+    height: 92.5%;
+    background-color: #A1A1A1;
+    color: #0a0a0a;
+  }
+  .butnc {
+    border-radius: 50% !important;
+    width: 95%;
+    height: 95%;
+    background-color: rgba(42, 125, 120, 0.9);
+    color: #CFCFCF;
+    font-weight: 300 !important;
+
+  }
+  .butnHid {
+    
+    transition: all .5s ease;
+  }
+  .butnShow {
+    display: block;
+    margin: .5% !important;
+    background-color: var(--contwhite);
+    color: var(--butnTxtclr);
+    border-radius: 30%;
+    transition: all .5s ease;
+    box-shadow: none !important;
+  }
+
+  .topKeys {
+    background-color: transparent !important;
+    border-radius: 60%;
+    width: 50% !important;
+    height: 50% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    place-self: center;
+  }
+
+  .shiftLeft {
+    grid-area: 2/2/3/3;
+    padding-bottom: 10% !important;
+    color: #535557;
+  }
+  .shiftRight {
+    grid-area: 2/3/3/4;
+    padding-bottom: 10% !important;
+    color: #535557;
+  } 
+  .chevDown {
+    grid-area: 2/4/3/5;
+    transition: all .5s ease;
+    margin-top: .4em !important;
+  }
+  
+  .overlayChev {
+    z-index: 10 !important;
+  }
+  
+  .butnAC {
+   background-color: rgb(254,8,10);
+  }
+  .butnHist {
+    grid-area: 2/1/3/2;
+    display: block !important;
+    color: rgb(1, 66, 1) !important;
+  }
+
+  .butnEqual {
+    background-color: #a2fdfd;
+    color: rgb(1, 66, 1);
+  }
+
+  .bracOpen {
+    grid-area: 3/1/4/2;
+  }
+  .bracClose {
+    grid-area: 3/2/4/3;
+  }
+  .butnPower {
+    grid-area: 3/3/4/4;
+  }
+  .butnSqr {
+    grid-area: 3/4/4/5;
+  }
+
+  .butnFact {
+    grid-area: 4/1/5/2;
+  }
+  .butnSqrt {
+    grid-area: 4/2/5/3;
+  }
+  .butnCbrt {
+    grid-area: 4/3/5/4;
+  }
+  .butnExp {
+    grid-area: 4/4/5/5;
+  }
+
+  .butnEuler {
+    grid-area: 5/1/6/2;
+  }
+  .butnNatLog {
+    grid-area: 5/2/6/3;
+  }
+  .butnLog {
+    grid-area: 5/3/6/4;
+  }
+  .butnInvert {
+    grid-area: 5/4/6/5;
+    font-size: 1.2em !important;
+
+  }
+
+  .butnSin {
+    grid-area: 6/1/7/2;
+    font-size: 1.2em !important;
+  }
+  .butnCos {
+    grid-area: 6/2/7/3;
+    font-size: 1.2em !important;
+  }
+  .butnTan {
+    grid-area: 6/3/7/4;
+    font-size: 1.2em !important;
+  }
+  .butnDEG {
+    grid-area: 6/4/7/5;
+    color: rgb(69, 69, 99) !important;
+  }
+
+  .butnArcSin {
+    grid-area: 6/1/7/2;
+    font-size: 1.2em !important;
+
+  }
+  .butnArcCos {
+    grid-area: 6/2/7/3;
+    font-size: 1.2em !important;
+
+  }
+  .butnArcTan {
+    grid-area: 6/3/7/4;
+    font-size: 1.2em !important;
+
+  }
+  .butnRAD {
+    grid-area: 6/4/7/5;
+  }
+
+  .butnCsc {
+    grid-area: 7/1/8/2;
+    font-size: 1.2em !important;
+  }
+  .butnSec {
+    grid-area: 7/2/8/3;
+    font-size: 1.2em !important;
+
+  }
+  .butnCot {
+    grid-area: 7/3/8/4;
+    font-size: 1.2em !important;
+
+  }
+  .butnHyp {
+    grid-area: 7/4/8/5;
+    font-size: 1.2em !important;
+  }
+
+  .butnSinh {
+    grid-area: 6/1/7/2;
+    font-size: 1.2em !important;
+  }
+  .butnCosh {
+    grid-area: 6/2/7/3;
+    font-size: 1.2em !important;
+  }
+  .butnTanh {
+    grid-area: 6/3/7/4;
+    font-size: 1.2em !important;
+  }
+
+  .butnArcCsc {
+    grid-area: 7/1/8/2;
+    font-size: 1.2em !important;
+  }
+  .butnArcSec {
+    grid-area: 7/2/8/3;
+    font-size: 1.2em !important;
+
+  }
+  .butnArcCot {
+    grid-area: 7/3/8/4;
+    font-size: 1.2em !important;
+  }
+
+  .butnCsch {
+    grid-area: 7/1/8/2;
+    font-size: 1.2em !important;
+  }
+  .butnSech {
+    grid-area: 7/2/8/3;
+    font-size: 1.2em !important;
+
+  }
+  .butnCoth {
+    grid-area: 7/3/8/4;
+    font-size: 1.2em !important;
+  }
+
+  
+  .RadHide {
+    color: purple;
+    z-index: -4;
+  }
+  .RadShow {
+    z-index: 6 ;
+  }
+  .DegHide {
+    z-index: -6;
+  }
+  
+  .trigButns {
+    z-index: 2;
+  }
+  .trigButnsHide {
+    z-index: -4;
+  }
+
+  .invButns {
+    z-index: -3;
+  }
+  .invsButnsShow {
+    z-index: 4 !important;
+  }
+  .invClr {
+    color: rgb(247, 177, 189) !important;
+  }
+
+  .hypHide {
+    z-index: -8;    
+  }
+  .hypShow {
+    z-index: 6 !important;
+  }
+  .hypHighlgt {
+    color: rgb(56, 100, 56);
+  }
+
+  .butInvs {
+    
+  }
+
+  .butnAns {
+    
+    color: rgb(243, 71, 9);
+  }
+
+  .name {
+    color: aquamarine;
+  }
+  .gb {
+    color: #dcdcdc;
+  }
+
+  .hid {
+    position: relative;
+    left: -100%;
+    filter: blur(5px);
+    min-width: auto;
+  }
+  .rev {
+    position: relative;
+    left: 0;
+    filter: blur(0);
+    transition: left 1s;
+  } 
+
+@media screen and (min-width: 400px) {
+  #history {
+    top: 30vh;
+  }
+  .showHistory {
+    height: 70% !important;
+  }
+
+  .inputParent {
+    position: relative;
+    height: 14vh;
+    padding: 0.75em 0 0.75em 0.5em;
+}
+
+  .fullCont {
+    left: 0;
+    right: 0;
+    grid-template-rows: 1fr 0.5fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr;
+  }
+
+  .enteredExpressionInp {
+    position: absolute;
+    top: 0;
+    font-size: 140%;
+    color: #0C645B;
+    padding: 0em 0 0.25em 0.25em ;
+  }
+  .preciseResultInp {
+    position: absolute;
+    top: 50%;
+    font-size: 140%;
+    color: #e2e0e0;
+    padding: 0em 0 0.25em 0.25em ;
+  }
+
+}
+
+@media screen and (min-width: 768px) {
+  .calccont {
+    overflow-x: hidden
+    ;
+  }
+  .enteredExpressionInp {
+    font-size: 150%;
+    color: #0C645B;
+    padding: 0em 0 0.5em 0.5em;
+}
+  .cont {
+    position: relative;
+    top: 5vh;
+    width: 98% !important; 
+    place-self: center;
+    max-height: 100%;
+    background-color: var(--contwhite);
+    padding: 0.8em !important;
+  }
+
+  .fullCont {
+    top: 15vh;
+    width: 100% !important; 
+    place-self: center;
+    grid-template-columns: 2fr 2fr 2fr 2fr;
+    grid-template-rows: 1fr 0.5fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr;
+}
+
+}
+
+@media screen and (min-width: 1024px) {
+  .calcparent {
+    width: 100%;
+    height: fit-content;
+    
+  }
+  .calccont {
+    top: 0;
+    height: fit-content !important;
+    height: -moz-fit-content !important;
+  }
+  
+  .cont {
+    top: 0%; 
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows:  repeat(6, minmax(0, 0.8fr)) !important;
+    box-shadow: 10px 10px 10px 10px rgba(0, 0, 1, 0.2);
+    width: auto; 
+    place-content: center;
+    max-height: 100%;
+    padding: 0.5% 0 1.5% 0;
+    margin: 2% !important;
+    background-color: var(--contwhite);
+  }
+
+  .inputParent {
+    position: relative;
+    grid-area: 1/1/2/10;      
+    visibility: none;
+    height: 100%;
+    width: auto;
+    margin: 0;
+    padding: 0.25em 0 0.25em 0.25em ;      
+    border: solid 2px gray;
+    border-radius: 5px;
+    font-size: 100%;
+    background-color: #C0C0C0;
+    color: rgba(127, 255, 212, 0.8);
+  }
+
+  .virtualInputField div {
+  position: inherit;
+  top: inherit;
+  width: 100% !important;
+  height: inherit;
+  padding: 0;
+  background-color: #C0C0C0;
+  border-radius: 5px;
+  }
+
+  .inputField {
+    visibility: hidden;
+   grid-area: 1/1/2/10;
+    height: 100%;
+    width: auto;
+    margin: 0;
+    border: solid 2px pink;
+    border-radius: 5px;
+    font-size: 250%;
+    color: rgba(127, 255, 212, 0.8);   
+  }
+
+  #history {
+    margin: 7% 0 0 5.5%;
+    height: 47.75vh !important;
+  }
+
+  .hideHistory {
+    transition: all .5s ease ;
+    transform-origin: right;
+    transform: scale(0, 0) !important;
+    position: absolute;
+    top: 27.5vh;
+    left: -50% !important;
+    z-index: 100;
+    height: 20%;
+    width: 20%;
+    border-radius: 15px;
+    overflow-y: scroll !important;
+  }
+
+  .showHistory {
+    transform-origin: top left !important;
+    transform: scale(1, 1)!important;
+    transition: all .5s ease;
+    position: absolute;
+    top: 23vh !important;
+    left: -3.5% !important; 
+    z-index: 100 !important;
+    height: 60vh !important;
+    width: 37.75% !important; 
+    padding: .5% 2% 1% 2% !important;
+    overflow-y: scroll !important;
+  }  
+
+  button { 
+    background-color: aquamarine;
+    border: none;
+    border-radius: 2px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 1, 0.2);
+  }
+
+  .butns {
+    box-shadow:  5px 5px 5px rgba(0, 0, 1, 0.2) !important;
+    height: 75% !important;
+    width: 75% !important;
+    margin-top:  15%;
+    margin-left: 2%;
+  }
+
+
+  .butnHid {
+    display: block;
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 1, 0.2);
+    background-color: var(--topbackclr);
+    color: var(--butnTxtclr);
+    border-radius: 40%;
+    height: 75% !important;
+    width: 75% !important;
+    transition: all .5s ease;
+  }
+
+  .topKeys {
+    background-color:#e2e0e0 ;
+    border-radius: 45% !important;
+    height: 75% !important;
+    width: 75% !important;
+    margin-left: 0% !important;
+    position: relative;
+    margin-top: 15% !important;
+  }
+
+  .chevDown {
+    
+  }
+  .showAll {
+    
+  }
+
+  .butnPie {
+    grid-area: 3/9/4/10 !important;
+    display: block !important;
+    color: rgb(1, 66, 1) !important;
+  }
+  .shiftLeft {
+    grid-area: 2/6/3/7 !important;
+  }
+  .shiftRight {
+    grid-area: 2/7/3/8 !important;
+  }
+
+  .butInvs {
+    grid-area: 2/8/3/9 !important;
+  }
+
+  .butnHist {
+    grid-area: 2/5/3/6;
+  }
+  .butnAC {
+    grid-area: 2 /9/3/10 ;
+    background-color: rgb(254,8,10);
+  }
+  .butnPercent {
+    grid-area: 4/9/5/10;
+  }
+
+  .butnDivide {
+    grid-area: 2/8/3/9;
+  }
+  .butnTimes {
+    grid-area: 3 /8/4/9 ;
+  }
+  .butnPlus {
+    grid-area: 4 /8/5/9 ;
+  }
+  .butnMinus {
+    grid-area: 5 /8/6/9 ;
+  }
+
+  .butnAns {
+    grid-area: 5/9/6/9;
+    border-radius: 50% !important;
+    width: 95%;
+    height: 95%;
+    background-color: #C0C0C0 !important;
+    color: #0a0a0a !important;
+    margin-top: 10% !important;
+  }
+
+  .butnClear {
+    grid-area: 6/7/7/8;
+  }
+  .butnZero {
+    grid-area: 6/6/7/7;
+  }
+  .butnPoint {
+    grid-area: 6/5/7/6;
+  }
+
+  .butnEqual {
+    grid-area: 6/8/7/10;
+    border-radius: 10px !important;
+    background-color: rgb(108,225,203);
+    margin-top: 10%;
+    height: 75% !important;
+    width: 90% !important;
+  }
+
+  .bracOpen {
+    grid-area:  2 / 1/ 3/ 2 ;
+  } 
+  .bracClose{
+    grid-area: 2 / 2/ 3/ 3 ;
+  }
+  .butnPower {
+    grid-area: 2 / 3/ 3/ 4 ;
+  }
+  .butnSqr {
+    grid-area: 2 /4 / 3/ 5 ;
+  }
+  
+  .butnFact {
+    grid-area: 3 / 1/ 4/ 2  ;
+  }
+  .butnSqrt {
+    grid-area: 3 / 2/ 4/ 3 ;
+  }
+  .butnCbrt {
+    grid-area: 3 / 3/ 4/ 4 ;
+  }
+  .butnExp {
+    grid-area: 3 / 4/ 4/ 5 ;
+  }
+
+  .butnEuler {
+    grid-area: 4 /1 / 5/ 2 ;
+  }
+  .butnNatLog {
+    grid-area: 4 /2 / 5/ 3 ;
+  }
+  .butnLog {
+    grid-area: 4 /3 / 5/ 4 ;
+  }
+  .butnInvert {
+    grid-area: 4 /4 / 5/ 5 ;
+  }
+  
+  .butnSin {
+    grid-area: 5 /1 / 6/ 2 ;
+  }
+  .butnCos {
+    grid-area: 5 /2 / 6/ 3 ;
+  }
+  .butnTan {
+    grid-area: 5 /3 / 6/ 4 ;
+  }
+  .butnDEG {
+    grid-area: 5 /4 / 6/ 5;
+  }
+
+  .butnSinh {
+    grid-area: 5 /1 / 6/ 2 ;
+  }
+  .butnCosh {
+    grid-area: 5 /2 / 6/ 3 ;
+  }
+  .butnTanh {
+    grid-area: 5 /3 / 6/ 4 ;
+  }
+
+  .hypHighlgt {
+    color: rgb(56, 100, 56) !important;
+  }
+
+  .butnArcSin {
+    grid-area: 5/1/6/2;
+  }
+  .butnArcCos {
+    grid-area: 5/2/6/3;
+  }
+  .butnArcTan {
+    grid-area: 5/3/6/4;
+  }
+
+  .butnRAD {
+    grid-area: 5 /4 / 6/ 5;
+    color: purple !important;
+    z-index: -6;
+  }
+
+  .butnCsc {
+    grid-area: 6/1/7/2;
+  }
+  .butnSec {
+    grid-area: 6/2/7/3;
+  }
+  .butnCot {
+    grid-area: 6/3/7/4;
+  }
+
+  .butnArcCsc {
+    grid-area: 6/1/7/2;
+  }
+  .butnArcSec {
+    grid-area: 6/2/7/3;
+  }
+  .butnArcCot {
+    grid-area: 6/3/7/4;
+  }
+
+  .butnCsch {
+    grid-area: 6/1/7/2;
+  }
+  .butnSech {
+    grid-area: 6/2/7/3;
+  }
+  .butnCoth {
+    grid-area: 6/3/7/4;
+  }
+
+  .butnHyp {
+    grid-area: 6/4/7/5;
+  }
+
+  .tech-stacks {
+    margin: 0 25% 0 25% ;
+  }
+}
+
+@media screen and (max-width: 1024px) and (min-height: 768px) {
+  
+}*/
