@@ -9,7 +9,7 @@ function UTonyCalc() {
   const [isFirstExecution, setIsFirstExecution] = useState(true);
   const [activeButton, setActiveButton] = useState(null);
   const prevInputVal = useRef(inputVal);
-  const butnCountRef = useRef(0);
+  const butnCountRef = useRef(true);
   const historyTabRef = useRef(null);
   const contRef = useRef(null);
 
@@ -120,6 +120,16 @@ if (historyTabRef.current) {
 }
 }
 
+const handleValueChange = (e) => {
+  const newVal = e.target.value;
+  console.log('val changed!');
+
+  if (newVal !== inputVal) {
+    butnCountRef.current = true;
+    console.log('val no longer the same');
+  }
+}
+
 const onButtonClick = (e, val) => {
     e.preventDefault();
 
@@ -212,14 +222,6 @@ const onButtonClick = (e, val) => {
         showAllButn.classList.replace("fullContainer", "cont");
       }
     }
-
-    function rotateChev() {
-          if (showAllButn.classList.contains("cont")) {
-            chevButn.style.rotate = 'x 180deg';
-          } else {
-            chevButn.style.rotate = 'x 0deg';
-          }
-     }
     
      function replaceRow(newRow5, newRow6) {
       const container = document.querySelector('.fullContainer');
@@ -267,6 +269,7 @@ const onButtonClick = (e, val) => {
         console.log(gridItems);
       }
     }
+
 
     if (val === '=') {
 
@@ -458,8 +461,13 @@ const onButtonClick = (e, val) => {
                 calculationHistory.length > 0 && 
                 calculationHistory[0].enteredExpression === newItem.enteredExpression &&
                 calculationHistory[0].preciseResult === newItem.preciseResult;
+
+            const isSameExpressionResult = (enteredExpression.toString() === preciseResult.toString());
+            console.log(enteredExpression.toString());
+            console.log(preciseResult.toString())
+            console.log('both exprss & result are the same ?',isSameExpressionResult);
     
-            if (!isDuplicateOfFirstItem) {
+            if (!isDuplicateOfFirstItem && !isSameExpressionResult) {
                 calculationHistory.unshift(newItem); // Add the item to the beginning
             }
         }
@@ -570,12 +578,11 @@ const onButtonClick = (e, val) => {
           setNewResult("");
           setCursorPos(result.toString().length);
           console.log(val === expression);
-          butnCountRef.current = 0;  
           console.log('expression removed, result moved up');
           console.log(prevInputVal.current);
         };
     
-        if (isFirstExecution) {
+        if (isFirstExecution && butnCountRef.current) {
           await setInputValue();
           setIsFirstExecution(false);
           console.log(prevInputVal.current);
@@ -583,14 +590,9 @@ const onButtonClick = (e, val) => {
         } else {
           console.log(prevInputVal.current);
           newInputValue();
-          if (butnCountRef.current > 0 ) {
-            setIsFirstExecution(false);
-            console.log(`butn clicked enough times do nothing`);
-          } else {
-            setIsFirstExecution(true);
-            console.log(`butn clicked ${butnCountRef.current = butnCountRef.current + 1} time, expression removed, result moved up`);
-            console.log(inputVal)
-          }
+          setIsFirstExecution(true);
+          butnCountRef.current = false;
+          console.log(`butn count is `, butnCountRef.current);
         }
       };
 
@@ -768,15 +770,22 @@ const onButtonClick = (e, val) => {
       (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
       (val === 'log(') || (val === 'ln(') 
       ) {
-        console.log(valueLength);      
         setCursorPos(cursorPos + valueLength);
         setInputVal(newInput);
-        console.log(cursorPos);  
       } else {
-        console.log(valueLength);      
         setCursorPos(cursorPos + 1);
         setInputVal(newInput);
-        console.log(cursorPos);  
+      }
+
+      const inputLength = inputVal.length
+      console.log('Original input length',inputLength);
+      console.log('New result length',valueLength);
+      console.log('is the input the same as the result ', inputLength === valueLength)
+      
+      if (inputLength !== valueLength) {
+        butnCountRef.current = true;
+      } else {
+        butnCountRef.current = false;
       }
     }
     clrField();
@@ -823,7 +832,7 @@ const onButtonClick = (e, val) => {
               <p className="preciseResultInp absolute top-1/2 w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 ">{newResult}</p>
             </div>
              <input type="text" name='calc' value={trackCursor(inputVal)} 
-             className='inputField hidden' 
+             className='inputField hidden'  onChange={(e) => handleValueChange()}
               readOnly/>
           </div>
 
