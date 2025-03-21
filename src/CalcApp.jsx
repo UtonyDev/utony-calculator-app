@@ -1061,7 +1061,7 @@ const onButtonClick = (e, val) => {
 
               <input type="text" name='calc' value={inputVal} ref={inputRef}
              className='enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 whitespace-nowrap overflow-x-auto focus:outline-none'  onChange={(e) => handleValueChange()}
-              />
+             inputMode="none" />
 
               <p className="preciseResultInp absolute top-1/2 w-full h-1/2 text-2xl text-green-500 text-justify font-normal p-2 ">{newResult}</p>
             </div>
