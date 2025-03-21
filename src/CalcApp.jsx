@@ -4,14 +4,19 @@ import './CalcApp.css';
 
 function UTonyCalc() {
   const [inputVal, setInputVal] = useState('');
-  const [cursorPos, setCursorPos] = useState(0);
+  const [cursorPos, setCursorPos] = useState(inputVal.length);
   const [newResult, setNewResult] = useState(inputVal);
   const [isFirstExecution, setIsFirstExecution] = useState(true);
   const [activeButton, setActiveButton] = useState(null);
   const prevInputVal = useRef(inputVal);
+  const inputRef = useRef(null);
   const butnCountRef = useRef(true);
   const historyTabRef = useRef(null);
   const contRef = useRef(null);
+  const cursorRef = useRef(0);
+  const cursorChange = useRef(false);
+  const clearRef = useRef(false);
+  const valRef = useRef(0);
 
   const Buttons = [  
   { label: 'H', value: 'history' },
@@ -120,6 +125,58 @@ if (historyTabRef.current) {
 }
 }
 
+const setCursorPosition = (position) => {
+  if (inputRef.current) {
+    if (position > 0) {
+      inputRef.current.focus();
+      console.log('passed cursor position is', position)
+      cursorRef.current = position;
+      inputRef.current.setSelectionRange(position, position);
+    } else if (position === 0) {
+      inputRef.current.focus();
+      inputRef.current.setSelectionRange(0, 0);
+      console.log('the passed position was ZERO', position)
+    } else {
+      inputRef.current.focus();
+      console.log('the cursor is at the beginning', position)
+      inputRef.current.setSelectionRange(inputVal.length, inputVal.length);
+    }
+  }
+}
+
+const getCursorPosition = () => {
+  if (inputRef.current) {
+    if (inputRef.current.selectionStart === inputRef.current.value.length) {
+      const cursorIsAt = inputRef.current.selectionStart;
+      console.log('the selectionStart cursor is at DEFAULT position', cursorIsAt)
+      console.log('from DEfault cursor REF is', cursorRef.current)
+      return cursorIsAt;
+    } else {
+      const cursorIsAt = inputRef.current.selectionStart;
+      console.log('the selectionStart cursor is at NEW Position', cursorIsAt) ;
+      console.log('from NEW cursor REF is', cursorRef.current)
+      return cursorIsAt;
+    }
+  }
+}
+
+useEffect(() => {
+  if (inputRef.current) { 
+    if (inputRef.current.selectionStart != inputRef.current.value.length) {
+      const cursorPosition = getCursorPosition(); 
+      setCursorPosition(cursorPosition);
+      console.log('GOTTEN Cursor position is', cursorPosition);
+    } else if (cursorChange.current) {
+      console.log('AUTO set to', cursorRef.current)
+      if (clearRef.current) {
+        setCursorPosition(cursorRef.current);
+      } else {
+        setCursorPosition(cursorRef.current + 1)
+      }
+    } 
+  }
+}, [cursorPos, inputVal]);
+
 const handleValueChange = (e) => {
   const newVal = e.target.value;
   console.log('val changed!');
@@ -134,8 +191,6 @@ const onButtonClick = (e, val) => {
     e.preventDefault();
 
     const err = "math error";
-    let preciseResult;
-    let enteredExpression;
     let historyElement; 
     let butn =  document.querySelectorAll("#butns");
     let showAllButn = document.querySelector("#calccon");
@@ -605,27 +660,91 @@ const onButtonClick = (e, val) => {
           console.log('empty expression')
           const errMessage = 'Empty Expression'
           setInputVal(errMessage);
-          setCursorPos(cursorPos + errMessage.length);
         } else {
           const errMessage = 'Invalid Expression'
           setInputVal(errMessage);
-          setCursorPos(cursorPos + errMessage.length);
         }
         
       }
 
     } else if (val === 'clear') {
-      if (cursorPos > 0) {
+      if (cursorPos > 0 && inputRef.current.selectionStart === inputRef.current.value.length ) {
         const newInput = inputVal.slice(0, cursorPos - 1) + inputVal.slice(cursorPos);
+        console.log("cursorPos whike CLEAR is",cursorPos)
         setInputVal(newInput);
         setCursorPos(cursorPos - 1);
+        console.log('REMOVING val and SHIFTING cursor');
+        cursorChange.current = false;
+        setCursorPosition(cursorPos - 1);
+
+      } else if (cursorPos > 0 && inputRef.current.selectionStart != inputRef.current.value.length) {
+        console.log('REMOVING val AFTER cursor has been shifted, then SHIFT cursor')
+
+        console.log('the 1ST input SELECTIO has exhaused ?', inputVal.slice(0, cursorRef.current - 1).length < 1 )
+        const newInput = inputVal.slice(0, cursorRef.current - 1) + inputVal.slice(cursorRef.current);
+        if (inputVal.slice(0, cursorRef.current - 1).length < 1 ) {
+          console.log("cursorPos while CLEAR is",cursorPos)
+          console.log('the 1ST input SELECTION has exhaused now RESET!!!')
+          setInputVal(newInput);
+          console.log('the CUT val is ', inputVal.slice(0, cursorRef.current - 1), 'and the REST of the Val is', inputVal.slice(cursorRef.current)) ;
+          cursorChange.current = true; 
+          clearRef.current = true;
+          // Reset the cursor
+          setCursorPos(cursorRef.current = inputRef.current.value.length);
+          setCursorPosition(cursorRef.current);
+        } else {
+          console.log("cursorPos while CLEAR is",cursorPos)
+          setInputVal(newInput);
+          console.log('the CUT val is ', inputVal.slice(0, cursorRef.current - 1), 'and the REST of the Val is', inputVal.slice(cursorRef.current)) ;
+          cursorChange.current = true; 
+          clearRef.current = true;
+          setCursorPos(cursorRef.current - 1);
+          setCursorPosition(cursorRef.current - 1);
+        }
+                
+      } else if (cursorPos > 0 && cursorRef.current != inputRef.current.value.length ) {
+        console.log('REMOVING val AFTER cursor has been shifted and a NEW VALUE has been ADDED, then SHIFT cursor')
+        const newInput = inputVal.slice(0, cursorRef.current - 1) + inputVal.slice(cursorRef.current);
+        console.log("cursorPos while CLEAR is",cursorPos)
+        setInputVal(newInput);
+        console.log('the CUT val is ', inputVal.slice(0, cursorRef.current - 1), 'and the REST of the Val is', inputVal.slice(cursorRef.current))
+        setCursorPos(cursorRef.current - 1);
+
+        cursorChange.current = true;
+        clearRef.current = true;
+        setCursorPosition(cursorRef.current - 1);        
+      } else if (cursorPos === 0 && inputRef.current.value.length) {
+        const newInput = inputVal.slice(0, cursorRef.current - 1);
+        console.log("cursorPos whike CLEAR is", cursorPos)
+        setInputVal(newInput);
+        setCursorPos(cursorPos);
+        console.log('REMOVING val and SHIFTING cursor', inputVal.slice(0, cursorRef.current - 1));
+        cursorChange.current = false;
+        setCursorPosition(cursorPos);
       }
     } else if (val === '←') {
-      if (cursorPos > 0) {
-        const newInput = inputVal.slice(0, cursorPos) + val + inputVal.slice(cursorPos);
-        const valueLength = newInput.length;
-        console.log(newInput);
+      if (cursorPos > 0 && cursorPos === inputRef.current.selectionStart) {
+        const expressionInput = document.querySelector('.enteredExpressionInp');
 
+        
+          setCursorPos(cursorPos - 1);
+          console.log('the cursor was moved BACK state position is set to', cursorPos);
+  
+          setCursorPosition(cursorPos - 1);
+          console.log('the cursor was moved BACK to', inputRef.current.selectionStart);
+
+          console.log('is the cursor NOTthe same as the input length', inputRef.current.selectionStart != inputRef.current.value.length)
+
+        console.log('CURSOR WENT BACK HARD')
+
+          
+        const exprScrlWidth = expressionInput.scrollWidth;
+        const exprActualWidth = expressionInput.clientWidth
+        if (exprScrlWidth > exprActualWidth) {
+          console.log('text exceeded')
+          expressionInput.scrollLeft = 0;
+        }
+        /*
         if (inputVal.includes('sin(') || inputVal.includes('cos(') ||
          inputVal.includes('tan(') || inputVal.includes('csc(') ||
          inputVal.includes('sec(') || inputVal.includes('cot(') ) {
@@ -634,31 +753,87 @@ const onButtonClick = (e, val) => {
           setCursorPos(cursorPos - 5);
         } else {
           setCursorPos(cursorPos - 1);
-        }
+        }*/
+  
+      } else if (cursorPos === 0) {        
+        setCursorPosition(inputRef.current.value.length);
+        console.log('the input length is', inputRef.current.value.length)
+        console.log("cursorPos is at the beginning at ZERO");
+        console.log('after ZERO the selection start is', inputRef.current.selectionStart)
+        // reset the cursor 
+        setCursorPos(inputRef.current.value.length);
       } 
-      console.log(cursorPos);
+      else {      
+        console.log(cursorPos);
+        if (cursorRef.current != inputRef.current.value.length ) {
+          setCursorPos(cursorPos);
+          console.log('the cursor was moved BACK state AFTER a Input was added', cursorPos);
+          
+          cursorRef.current -= 1;
+          setCursorPosition(cursorPos);
+          console.log('the cursor was moved BACK to', inputRef.current.selectionStart);
+
+          console.log('is the cursor NOT the same as the input length', inputRef.current.selectionStart != inputRef.current.value.length)
+
+        } else {
+        setCursorPos(cursorPos - 1);
+        console.log('the cursor state position is set to', cursorPos);
+
+        setCursorPosition(cursorPos - 1);
+        console.log('shifted cursor index', inputRef.current.selectionStart);        
+        console.log('cursor position is at the beginning');
+
+        }
+      }
     }
     else if (val === '→') {
-      if (cursorPos < inputVal.length) {
-        const newInput = inputVal.slice(0, cursorPos) + val + inputVal.slice(cursorPos);
-        const valueLength = newInput.length;
-        console.log(newInput);
+      if (cursorPos >= 0 && inputRef.current.value.length != inputRef.current.selectionStart) {
+        const expressionInput = document.querySelector('.enteredExpressionInp');
 
+          setCursorPos(cursorPos + 1);
+          console.log('the cursor state position is set to', cursorPos);
+
+          const incrementCursor = () => {
+            const cursorIncreased = cursorPos + 1;
+            if (cursorIncreased <= inputRef.current.value.length) {
+              return cursorIncreased
+            } else {
+              return inputRef.current.value.length
+            }
+          }
+  
+          setCursorPosition(incrementCursor());
+          console.log('shifted cursor index', inputRef.current.selectionStart);
+          console.log('is the cursor NOTthe same as the input length', inputRef.current.selectionStart != inputRef.current.value.length)
+        
+        const exprScrlWidth = expressionInput.scrollWidth;
+        const exprActualWidth = expressionInput.clientWidth
+        if (exprScrlWidth > exprActualWidth) {
+          console.log('text exceeded')
+          expressionInput.scrollLeft = 0;
+        }
+        /*
         if (inputVal.includes('sin(') || inputVal.includes('cos(') ||
          inputVal.includes('tan(') || inputVal.includes('csc(') ||
-         inputVal.includes('sec(') || inputVal.includes('cot(')) {
-          setCursorPos(cursorPos + 4);
+         inputVal.includes('sec(') || inputVal.includes('cot(') ) {
+          setCursorPos(cursorPos - 4);
         } else if (inputVal.includes('sinh(')) {
-          setCursorPos(cursorPos + 5); 
+          setCursorPos(cursorPos - 5);
         } else {
-          setCursorPos(cursorPos + 1);
-        }      }       
-      console.log(cursorPos);
+          setCursorPos(cursorPos - 1);
+        }*/
+  
+      } else if (inputRef.current.selectionStart === inputRef.current.value.length) {
+        console.log('cursor is at END so move to beginning');
+        setCursorPosition(0);
+        setCursorPos(0)
+      }
     }
     else if (val === 'AC') {
       setInputVal('');
       setNewResult('')
       setCursorPos(0, cursorPos);
+      setIsFirstExecution(true);
       console.log(cursorPos);
     } else if (val === "expand") {
     showFunctKeys();
@@ -747,6 +922,9 @@ const onButtonClick = (e, val) => {
       setCursorPos(cursorPos + resultLength);
       setInputVal(concactStoredResult);
 
+      const expressionInput = document.querySelector('.enteredExpressionInp');
+
+      
     } else if (val === 'history') {
         // Display the history in an element 
         historyElement = document.getElementById('history');
@@ -759,29 +937,80 @@ const onButtonClick = (e, val) => {
         renderHistory(storedHistory);
         
     } else  {
-      const newInput = inputVal.slice(0, cursorPos) + val + inputVal.slice(cursorPos);
+      const inputLength = inputRef.current.value.length;
+      const newInput = inputVal.slice(0, cursorPos) + val + inputRef.current.value.slice(cursorPos);
       const valueLength = newInput.length;
-      if (
-      (val === 'sin(') || (val === 'cos(') || (val === 'tan(') ||
-      (val === 'csc(') || (val === 'sec(') || (val === 'cot(') ||
-      (val === 'sin⁻¹(') || (val === 'cos⁻¹(') || (val === 'tan⁻¹(') ||
-      (val === 'csc⁻¹(') || (val === 'sec⁻¹(') || (val === 'cot⁻¹(') ||
-      (val === 'sinh(') || (val === 'cosh(') || (val === 'tanh(') ||
-      (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
-      (val === 'log(') || (val === 'ln(') 
-      ) {
-        setCursorPos(cursorPos + valueLength);
-        setInputVal(newInput);
+
+      if (cursorPos >= 0 && inputRef.current.selectionStart === inputLength) {
+        console.log('value ADDED at the end');
+        if (
+        (val === 'sin(') || (val === 'cos(') || (val === 'tan(') ||
+        (val === 'csc(') || (val === 'sec(') || (val === 'cot(') ||
+        (val === 'sin⁻¹(') || (val === 'cos⁻¹(') || (val === 'tan⁻¹(') ||
+        (val === 'csc⁻¹(') || (val === 'sec⁻¹(') || (val === 'cot⁻¹(') ||
+        (val === 'sinh(') || (val === 'cosh(') || (val === 'tanh(') ||
+        (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
+        (val === 'log(') || (val === 'ln(') 
+        ) {
+          setCursorPos(cursorPos + valueLength);
+          setInputVal(newInput);
+          cursorChange.current = false;
+        } else {
+          setCursorPos(cursorPos + 1);
+          setInputVal(newInput);
+          cursorChange.current = false;
+          console.log('shifted the cursor by 1');
+        }
+        setCursorPosition(inputLength);
+
+      }  else if (inputRef.current.selectionStart != inputLength) {
+        console.log('the user entered a value while the cursor has been SHIFTED now place it in the new position');
+        if (
+          (val === 'sin(') || (val === 'cos(') || (val === 'tan(') ||
+          (val === 'csc(') || (val === 'sec(') || (val === 'cot(') ||
+          (val === 'sin⁻¹(') || (val === 'cos⁻¹(') || (val === 'tan⁻¹(') ||
+          (val === 'csc⁻¹(') || (val === 'sec⁻¹(') || (val === 'cot⁻¹(') ||
+          (val === 'sinh(') || (val === 'cosh(') || (val === 'tanh(') ||
+          (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
+          (val === 'log(') || (val === 'ln(') 
+          ) {
+            setCursorPos(cursorPos + valueLength);
+            setInputVal(newInput);
+            setCursorPosition(inputRef.current.selectionStart);
+            cursorChange.current = true;
+            clearRef.current = false;
+          } else {
+            setCursorPos(inputRef.current.selectionStart);
+            setInputVal(newInput);
+            setCursorPosition(cursorRef.current);
+            cursorChange.current = true;
+            clearRef.current = false;
+            console.log('shifted the cursor by ', inputRef.current.selectionStart);
+          }
+
+      } else if (cursorPos != 0 && cursorPos === inputLength) {
+        console.log('value ADDED  after reset, so RESET cursor')
+        setCursorPosition(cursorPos);
       } else {
-        setCursorPos(cursorPos + 1);
-        setInputVal(newInput);
+        if (
+          (val === 'sin(') || (val === 'cos(') || (val === 'tan(') ||
+          (val === 'csc(') || (val === 'sec(') || (val === 'cot(') ||
+          (val === 'sin⁻¹(') || (val === 'cos⁻¹(') || (val === 'tan⁻¹(') ||
+          (val === 'csc⁻¹(') || (val === 'sec⁻¹(') || (val === 'cot⁻¹(') ||
+          (val === 'sinh(') || (val === 'cosh(') || (val === 'tanh(') ||
+          (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
+          (val === 'log(') || (val === 'ln(') 
+          ) {
+            setCursorPos(cursorPos + valueLength);
+            setInputVal(newInput);
+          } else {
+            setCursorPos(inputRef.current.selectionStart);
+            setInputVal(newInput);
+            console.log('shifted the cursor by DEFAULT', inputRef.current.selectionStart);
+          }
       }
 
-      const inputLength = inputVal.length
-      console.log('Original input length',inputLength);
-      console.log('New result length',valueLength);
-      console.log('is the input the same as the result ', inputLength === valueLength)
-      
+      // for preventing giving answer when double click of the same value
       if (inputLength !== valueLength) {
         butnCountRef.current = true;
       } else {
@@ -804,7 +1033,8 @@ const onButtonClick = (e, val) => {
   }
 
   useEffect(() => {calcFull()}, [window.load]);
-
+ 
+  /*
   let left; 
   let right;
   const trackCursor = (inputVal) => {
@@ -812,7 +1042,7 @@ const onButtonClick = (e, val) => {
     left = inputVal.slice(0, cursorPos);
     right = inputVal.slice(cursorPos);
     return `${left}|${right}`;
-  };
+  };*/
 
   return (
     <>
@@ -828,12 +1058,14 @@ const onButtonClick = (e, val) => {
             <div className="virtualInputField relative bg-neutral-200 h-full rounded-lg" 
                 onClick={hideHistoryTab}
             >
-              <p className="enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 ">{trackCursor(inputVal )}</p>
-              <p className="preciseResultInp absolute top-1/2 w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 ">{newResult}</p>
+
+              <input type="text" name='calc' value={inputVal} ref={inputRef}
+             className='enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 whitespace-nowrap overflow-x-auto focus:outline-none'  onChange={(e) => handleValueChange()}
+              />
+
+              <p className="preciseResultInp absolute top-1/2 w-full h-1/2 text-2xl text-green-500 text-justify font-normal p-2 ">{newResult}</p>
             </div>
-             <input type="text" name='calc' value={trackCursor(inputVal)} 
-             className='inputField hidden'  onChange={(e) => handleValueChange()}
-              readOnly/>
+             
           </div>
 
           {Buttons.map((buttons, index) => (
