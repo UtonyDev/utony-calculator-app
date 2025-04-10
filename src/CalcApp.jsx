@@ -735,8 +735,8 @@ const onButtonClick = (e, val) => {
       const indicesOfLegalChars = charex.map((char, index) => {
         if (
           char.match(/[\d)\+\-\÷\×\∛\√\²\!\^\x²]/) || 
-          (index >= 0 && ((char.match(/c|s|t/)) || 
-          (charex[index-1].match(/\d/) && char.match(/[cstel]/)) ||
+          (index >= 0 && ((char.match(/c|s|t|l/)) || 
+          (charex[index-1].match(/\d/) && char.match(/[cstel\(]/)) ||
         (charex[index-1].match(/[\+\-\×\÷\∛\√\²\!\^\x²]/) && char.match(/[cstel]/))
         ))) {
 
