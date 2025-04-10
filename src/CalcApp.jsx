@@ -6,6 +6,7 @@ function UTonyCalc() {
   const [inputVal, setInputVal] = useState('');
   const [cursorPos, setCursorPos] = useState(inputVal.length);
   const [newResult, setNewResult] = useState(inputVal);
+  const [inputLen, setInputLen] = useState(0);
   const [isFirstExecution, setIsFirstExecution] = useState(true);
   const [activeButton, setActiveButton] = useState(null);
   const prevInputVal = useRef(inputVal);
@@ -166,12 +167,15 @@ useEffect(() => {
       const cursorPosition = getCursorPosition(); 
       setCursorPosition(cursorPosition);
       console.log('GOTTEN Cursor position is', cursorPosition);
+      setInputLen(cursorPosition);
     } else if (cursorChange.current) {
       console.log('AUTO set to', cursorRef.current)
       if (clearRef.current) {
         setCursorPosition(cursorRef.current);
+        console.log('clearREF set to NORMAL')
       } else {
         setCursorPosition(cursorRef.current + 1)
+        console.log('clearREF set to NORMAL PLUS one')
       }
     } 
   }
@@ -723,67 +727,61 @@ const onButtonClick = (e, val) => {
         setCursorPosition(cursorPos);
       }
     } else if (val === '←') {
-      if (cursorPos > 0 && cursorPos === inputRef.current.selectionStart) {
+
+      let regex = /\w|[a-z+-×÷\∛\√\²!]|\(|\)+/g;
+      let charex = inputVal.match(regex);
+      console.log("the MATCHED chars are: ", charex);
+      
+      const indicesOfLegalChars = charex.map((char, index) => {
+        if (
+          char.match(/[\d)\+\-\÷\×\∛\√\²\!\^\x²]/) || 
+          (index >= 0 && ((char.match(/c|s|t/)) || 
+          (charex[index-1].match(/\d/) && char.match(/[cstel]/)) ||
+        (charex[index-1].match(/[\+\-\×\÷\∛\√\²\!\^\x²]/) && char.match(/[cstel]/))
+        ))) {
+
+        if ((char.match(/c|s|t/) && charex[index + 1].match(/\(/)) || (char.match(/s/) && charex[index + 1].match(/c/))) {
+       		return undefined;
+        }
+          return index;
+        }});
+
+      console.log("the indicies of the LEGAL chars GENERALLY are: ", indicesOfLegalChars);
+      const nextLegalIndex = indicesOfLegalChars.map(indChar => {
+        if (indChar !== undefined) {
+            return indChar;
+          };
+      })
+      const filteredNLI = nextLegalIndex.filter(nli => nli != undefined);
+
+      if (cursorPos > 0 && inputRef.current.selectionStart != 0) {
+        let legalCharacters = filteredNLI.length;
+        const factor = charex.length - filteredNLI.length;
+        console.log("out SUBTRACTION FACTOR for this expression is: ", factor);
+        let filterIndex = cursorPos - factor;
+        console.log("the new index to be used for the fltered array is: ", filterIndex - 1);
+        
+        console.log('the FIlTERED NEXT legal Chars should be', filteredNLI);
+        console.log("the INPUTLENGTH ENTERED IS: ", inputVal.length)
+        console.log("input CURSOR is at NORM")
         const expressionInput = document.querySelector('.enteredExpressionInp');
 
-        
+        if (legalCharacters >= 0) {
           setCursorPos(cursorPos - 1);
-          console.log('the cursor was moved BACK state position is set to', cursorPos);
-  
-          setCursorPosition(cursorPos - 1);
-          console.log('the cursor was moved BACK to', inputRef.current.selectionStart);
+          console.log("the NEXT legal Char INDEX should be: ", filteredNLI.at(filterIndex - 1));
+          setCursorPosition(filteredNLI.at(filterIndex - 1));
+          console.log("the CUURENT cursor position From the ARRAY is: ", filteredNLI.at(filterIndex - 1))
+          console.log('CursorPos REDUCED to', cursorPos - 1);
+        } 
 
-          console.log('is the cursor NOTthe same as the input length', inputRef.current.selectionStart != inputRef.current.value.length)
-
-        console.log('CURSOR WENT BACK HARD')
-
-          
-        const exprScrlWidth = expressionInput.scrollWidth;
-        const exprActualWidth = expressionInput.clientWidth
-        if (exprScrlWidth > exprActualWidth) {
-          console.log('text exceeded')
-          expressionInput.scrollLeft = 0;
-        }
-        /*
-        if (inputVal.includes('sin(') || inputVal.includes('cos(') ||
-         inputVal.includes('tan(') || inputVal.includes('csc(') ||
-         inputVal.includes('sec(') || inputVal.includes('cot(') ) {
-          setCursorPos(cursorPos - 4);
-        } else if (inputVal.includes('sinh(')) {
-          setCursorPos(cursorPos - 5);
-        } else {
-          setCursorPos(cursorPos - 1);
-        }*/
-  
-      } else if (cursorPos === 0) {        
+      } else {         
+        setCursorPos(inputRef.current.value.length)
         setCursorPosition(inputRef.current.value.length);
         console.log('the input length is', inputRef.current.value.length)
         console.log("cursorPos is at the beginning at ZERO");
         console.log('after ZERO the selection start is', inputRef.current.selectionStart)
         // reset the cursor 
-        setCursorPos(inputRef.current.value.length);
-      } 
-      else {      
-        console.log(cursorPos);
-        if (cursorRef.current != inputRef.current.value.length ) {
-          setCursorPos(cursorPos);
-          console.log('the cursor was moved BACK state AFTER a Input was added', cursorPos);
-          
-          cursorRef.current -= 1;
-          setCursorPosition(cursorPos);
-          console.log('the cursor was moved BACK to', inputRef.current.selectionStart);
-
-          console.log('is the cursor NOT the same as the input length', inputRef.current.selectionStart != inputRef.current.value.length)
-
-        } else {
-        setCursorPos(cursorPos - 1);
-        console.log('the cursor state position is set to', cursorPos);
-
-        setCursorPosition(cursorPos - 1);
-        console.log('shifted cursor index', inputRef.current.selectionStart);        
-        console.log('cursor position is at the beginning');
-
-        }
+        console.log("the cursor WAS RESET to the input length", inputVal.length)
       }
     }
     else if (val === '→') {
@@ -941,6 +939,20 @@ const onButtonClick = (e, val) => {
       const newInput = inputVal.slice(0, cursorPos) + val + inputRef.current.value.slice(cursorPos);
       const valueLength = newInput.length;
 
+      console.log('the button clicked was SINGLE : ', val, 'and its length is: ', val.length)
+
+      console.log("the CURSORPOS STATE after input is: ", cursorPos);
+      valRef.current = val.length;
+      console.log('the clicked value length', valRef.current)
+
+      /*
+      if (valRef.current > 1) {
+        console.log('a MULTIPLE CHAR button was Clicked!!')
+      } else {
+        console.log('a SINGLE CHAR button was Clicked!!')
+      }
+      */
+
       if (cursorPos >= 0 && inputRef.current.selectionStart === inputLength) {
         console.log('value ADDED at the end');
         if (
@@ -952,14 +964,17 @@ const onButtonClick = (e, val) => {
         (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
         (val === 'log(') || (val === 'ln(') 
         ) {
-          setCursorPos(cursorPos + valueLength);
+          setCursorPos(cursorPos + valRef.current);
           setInputVal(newInput);
           cursorChange.current = false;
+          console.log("FUNCT butns CLICKED and cursorPos is", cursorPos);
+          console.log('selectionStart is at ', inputRef.current.selectionStart);
         } else {
-          setCursorPos(cursorPos + 1);
+          setCursorPos(cursorPos + valRef.current);
           setInputVal(newInput);
           cursorChange.current = false;
-          console.log('shifted the cursor by 1');
+          console.log('NORMAL butn CLICKED and cursorPos is', cursorPos);
+          console.log('selectionStart is at ', inputRef.current.selectionStart);
         }
         setCursorPosition(inputLength);
 
@@ -974,7 +989,7 @@ const onButtonClick = (e, val) => {
           (val === 'csch(') || (val === 'sech(') || (val === 'coth(') ||
           (val === 'log(') || (val === 'ln(') 
           ) {
-            setCursorPos(cursorPos + valueLength);
+            setCursorPos(cursorPos + valRef.current);
             setInputVal(newInput);
             setCursorPosition(inputRef.current.selectionStart);
             cursorChange.current = true;
@@ -1060,7 +1075,8 @@ const onButtonClick = (e, val) => {
             >
 
               <input type="text" name='calc' value={inputVal} ref={inputRef}
-             className='enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 whitespace-nowrap overflow-x-auto focus:outline-none'  onChange={(e) => handleValueChange()}
+             className='enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 whitespace-nowrap overflow-x-auto focus:outline-none'
+             onChange={(e) => handleValueChange()}
              inputMode="none" />
 
               <p className="preciseResultInp absolute top-1/2 w-full h-1/2 text-2xl text-green-500 text-justify font-normal p-2 ">{newResult}</p>
@@ -1169,7 +1185,11 @@ const onButtonClick = (e, val) => {
         ? 'butnHid': ''}
 
     `}
-    onClick={(e) => onButtonClick(e, buttons.value)}
+    onClick={
+      (e) => {
+        onButtonClick(e, buttons.value);
+      }
+    }
     onMouseDown={() => handleMouseDown(index)}
     onMouseUp={handleMouseUp}
     onMouseLeave={handleMouseUp} 
