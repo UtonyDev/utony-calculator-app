@@ -674,7 +674,7 @@ const onButtonClick = (e, val) => {
     } else if (val === 'clear') {
       if (cursorPos > 0 && inputRef.current.selectionStart === inputRef.current.value.length ) {
         const newInput = inputVal.slice(0, cursorPos - 1) + inputVal.slice(cursorPos);
-        console.log("cursorPos whike CLEAR is",cursorPos)
+        console.log("cursorPos while CLEAR is",cursorPos)
         setInputVal(newInput);
         setCursorPos(cursorPos - 1);
         console.log('REMOVING val and SHIFTING cursor');
@@ -684,7 +684,7 @@ const onButtonClick = (e, val) => {
       } else if (cursorPos > 0 && inputRef.current.selectionStart != inputRef.current.value.length) {
         console.log('REMOVING val AFTER cursor has been shifted, then SHIFT cursor')
 
-        console.log('the 1ST input SELECTIO has exhaused ?', inputVal.slice(0, cursorRef.current - 1).length < 1 )
+        console.log('the 1ST input SELECTION has exhaused ?', inputVal.slice(0, cursorRef.current - 1).length < 1 )
         const newInput = inputVal.slice(0, cursorRef.current - 1) + inputVal.slice(cursorRef.current);
         if (inputVal.slice(0, cursorRef.current - 1).length < 1 ) {
           console.log("cursorPos while CLEAR is",cursorPos)
@@ -807,12 +807,10 @@ const onButtonClick = (e, val) => {
 
       if (cursorPos === 0 || inputRef.current.selectionStart != 0) {
 
-        if (legalCharacters >= 0) {
           setCursorPos(cursorPos + 1);
           setCursorPosition(filteredNLI.at(cursorPos + 1));
           console.log("the CUURENT cursor position From the ARRAY is: ", filteredNLI.at(cursorPos + 1))
-          console.log('CursorPos INCREASED to', cursorPos + 1);
-        } 
+          console.log('CursorPos INCREASED to', cursorPos + 1)
 
       } else {         
         setCursorPos(inputRef.current.value.length)
@@ -949,14 +947,6 @@ const onButtonClick = (e, val) => {
       valRef.current = val.length;
       console.log('the clicked value length', valRef.current)
 
-      /*
-      if (valRef.current > 1) {
-        console.log('a MULTIPLE CHAR button was Clicked!!')
-      } else {
-        console.log('a SINGLE CHAR button was Clicked!!')
-      }
-      */
-
       if (cursorPos >= 0 && inputRef.current.selectionStart === inputLength) {
         console.log('value ADDED at the end');
         if (
@@ -983,7 +973,7 @@ const onButtonClick = (e, val) => {
         setCursorPosition(inputLength);
 
       }  else if (inputRef.current.selectionStart != inputLength) {
-        console.log('the user entered a value while the cursor has been SHIFTED now place it in the new position');
+        console.log('Value added AFTER cursor position shift');
         if (
           (val === 'sin(') || (val === 'cos(') || (val === 'tan(') ||
           (val === 'csc(') || (val === 'sec(') || (val === 'cot(') ||
@@ -999,8 +989,9 @@ const onButtonClick = (e, val) => {
             cursorChange.current = true;
             clearRef.current = false;
           } else {
-            setCursorPos(inputRef.current.selectionStart);
-            setInputVal(newInput);
+            const custmNewInput = inputVal.slice(0, cursorRef.current) + val + inputVal.slice(cursorRef.current, inputRef.current.length);
+            setInputVal(custmNewInput);
+            console.log("the PADDED new input should be: ", custmNewInput);
             setCursorPosition(cursorRef.current);
             cursorChange.current = true;
             clearRef.current = false;
@@ -1077,11 +1068,22 @@ const onButtonClick = (e, val) => {
             <div className="virtualInputField relative bg-neutral-200 h-full rounded-lg" 
                 onClick={hideHistoryTab}
             >
-
-              <input type="text" name='calc' value={inputVal} ref={inputRef}
-             className='enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 whitespace-nowrap overflow-x-auto focus:outline-none'
-             onChange={(e) => handleValueChange()}
-             inputMode="none" />
+              <input 
+  type="text" 
+  name='calc' 
+  value={inputVal} 
+  ref={inputRef}
+  className='enteredExpressionInp absolute w-full h-1/2 text-2xl text-neutral-700 text-justify font-normal p-2 whitespace-nowrap overflow-x-auto focus:outline-none'
+  onChange={(e) => handleValueChange()}
+  inputMode="none"
+  autoCapitalize="off"
+  autoCorrect="off"
+  spellCheck="false"
+  onFocus={(e) => {
+    e.preventDefault(); // Block keyboard
+    // Manually manage cursor
+  }}
+/>
 
               <p className="preciseResultInp absolute top-1/2 w-full h-1/2 text-2xl text-green-500 text-justify font-normal p-2 ">{newResult}</p>
             </div>
@@ -1197,8 +1199,12 @@ const onButtonClick = (e, val) => {
     onMouseDown={() => handleMouseDown(index)}
     onMouseUp={handleMouseUp}
     onMouseLeave={handleMouseUp} 
-    onTouchStart={() => handleMouseDown(index)}
-    onTouchEnd={handleMouseUp}
+    onTouchStart={(e) => {
+      handleMouseDown(index);
+    }}
+    onTouchEnd={(e) => {
+      handleMouseUp();
+    }}
 
     style={{
       transform: `${activeButton === index ? 'scale(1.05)' : 'scale(1)'}`,
