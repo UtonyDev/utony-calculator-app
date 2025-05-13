@@ -729,6 +729,7 @@ const onButtonClick = (e, val) => {
     } else if (val === '←') {
 
       let regex = /\w|[a-z+-×÷\∛\√\²!]|\(|\)+/g;
+      // an array of each character
       let charex = inputVal.match(regex);
       console.log("the MATCHED chars are: ", charex);
       
@@ -747,17 +748,13 @@ const onButtonClick = (e, val) => {
         }});
 
       console.log("the indicies of the LEGAL chars GENERALLY are: ", indicesOfLegalChars);
-      const nextLegalIndex = indicesOfLegalChars.map(indChar => {
-        if (indChar !== undefined) {
-            return indChar;
-          };
-      })
-      const filteredNLI = nextLegalIndex.filter(nli => nli != undefined);
+      //filter out the undefined values
+      const filteredNLI = indicesOfLegalChars.filter(nli => nli != undefined);
 
       if (cursorPos > 0 && inputRef.current.selectionStart != 0) {
         let legalCharacters = filteredNLI.length;
         const factor = charex.length - filteredNLI.length;
-        console.log("out SUBTRACTION FACTOR for this expression is: ", factor);
+        console.log("our SUBTRACTION FACTOR for this expression is: ", factor);
         let filterIndex = cursorPos - factor;
         console.log("the new index to be used for the fltered array is: ", filterIndex - 1);
         
@@ -768,7 +765,6 @@ const onButtonClick = (e, val) => {
 
         if (legalCharacters >= 0) {
           setCursorPos(cursorPos - 1);
-          console.log("the NEXT legal Char INDEX should be: ", filteredNLI.at(filterIndex - 1));
           setCursorPosition(filteredNLI.at(filterIndex - 1));
           console.log("the CUURENT cursor position From the ARRAY is: ", filteredNLI.at(filterIndex - 1))
           console.log('CursorPos REDUCED to', cursorPos - 1);
@@ -785,46 +781,54 @@ const onButtonClick = (e, val) => {
       }
     }
     else if (val === '→') {
-      if (cursorPos >= 0 && inputRef.current.value.length != inputRef.current.selectionStart) {
-        const expressionInput = document.querySelector('.enteredExpressionInp');
+      if (cursorPos === 0 || inputRef.current.value.length != inputRef.current.selectionStart) {
+        let regex = /\w|[a-z+-×÷\∛\√\²!]|\(|\)+/g;
+      // an array of each character
+      let charex = inputVal.match(regex);
+      console.log("the MATCHED chars are: ", charex);
+      
+      const indicesOfLegalChars = charex.map((char, index) => {
+        if (
+          char.match(/[\d)\+\-\÷\×\∛\√\²\!\^\x²]/) || 
+          (index >= 0 && ((char.match(/c|s|t|l/)) || 
+          (charex[index-1].match(/\d/) && char.match(/[cstel\(]/)) ||
+        (charex[index-1].match(/[\+\-\×\÷\∛\√\²\!\^\x²]/) && char.match(/[cstel]/))
+        ))) {
 
-          setCursorPos(cursorPos + 1);
-          console.log('the cursor state position is set to', cursorPos);
-
-          const incrementCursor = () => {
-            const cursorIncreased = cursorPos + 1;
-            if (cursorIncreased <= inputRef.current.value.length) {
-              return cursorIncreased
-            } else {
-              return inputRef.current.value.length
-            }
-          }
-  
-          setCursorPosition(incrementCursor());
-          console.log('shifted cursor index', inputRef.current.selectionStart);
-          console.log('is the cursor NOTthe same as the input length', inputRef.current.selectionStart != inputRef.current.value.length)
-        
-        const exprScrlWidth = expressionInput.scrollWidth;
-        const exprActualWidth = expressionInput.clientWidth
-        if (exprScrlWidth > exprActualWidth) {
-          console.log('text exceeded')
-          expressionInput.scrollLeft = 0;
+        if ((char.match(/c|s|t/) && charex[index + 1].match(/\(/)) || (char.match(/s/) && charex[index + 1].match(/c/))) {
+       		return undefined;
         }
-        /*
-        if (inputVal.includes('sin(') || inputVal.includes('cos(') ||
-         inputVal.includes('tan(') || inputVal.includes('csc(') ||
-         inputVal.includes('sec(') || inputVal.includes('cot(') ) {
-          setCursorPos(cursorPos - 4);
-        } else if (inputVal.includes('sinh(')) {
-          setCursorPos(cursorPos - 5);
-        } else {
-          setCursorPos(cursorPos - 1);
-        }*/
-  
-      } else if (inputRef.current.selectionStart === inputRef.current.value.length) {
-        console.log('cursor is at END so move to beginning');
+          return index;
+        }});
+
+      console.log("the indicies of the LEGAL chars GENERALLY are: ", indicesOfLegalChars);
+      //filter out the undefined values
+      const filteredNLI = indicesOfLegalChars.filter(nli => nli != undefined);
+
+      if (cursorPos === 0 || inputRef.current.selectionStart != 0) {
+
+        if (legalCharacters >= 0) {
+          setCursorPos(cursorPos + 1);
+          setCursorPosition(filteredNLI.at(cursorPos + 1));
+          console.log("the CUURENT cursor position From the ARRAY is: ", filteredNLI.at(cursorPos + 1))
+          console.log('CursorPos INCREASED to', cursorPos + 1);
+        } 
+
+      } else {         
+        setCursorPos(inputRef.current.value.length)
+        setCursorPosition(inputRef.current.value.length);
+        console.log('the input length is', inputRef.current.value.length)
+        console.log("cursorPos is at the beginning at ZERO");
+        console.log('after ZERO the selection start is', inputRef.current.selectionStart)
+        // reset the cursor 
+        console.log("the cursor WAS RESET to the input length", inputVal.length)
+      }
+        
+      } else if (cursorPos > 0 && inputRef.current.selectionStart === inputRef.current.value.length) {
+      // here the cursor is at the end of the input characters and should be sent to the beginning
+        setCursorPos(0);
         setCursorPosition(0);
-        setCursorPos(0)
+        console.log('CursorPos sent to the beginning');
       }
     }
     else if (val === 'AC') {
